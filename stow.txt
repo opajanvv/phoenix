@@ -1,0 +1,8 @@
+# Common dotfiles to stow
+nvim
+tmux
+shell
+starship
+hypr
+waybar
+

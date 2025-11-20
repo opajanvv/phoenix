@@ -1,0 +1,18 @@
+# Phoenix Repository Rules
+
+## Documentation and Planning
+
+1. **Always refer to README.md first**: Before making any changes or answering questions about this repository, read and understand the README.md file. It contains the setup, goals, architecture, and usage instructions for Phoenix.
+
+2. **Keep README.md updated**: If plans, architecture, or behavior change during development, update README.md immediately to reflect those changes. The README.md should always be the single source of truth for understanding the repository's purpose and current state.
+
+3. **Documentation priority**: README.md takes precedence over any other documentation or comments in the codebase. If there's a discrepancy, update the code/comments to match README.md, or update README.md if the code represents the correct behavior.
+
+## Development Guidelines
+
+- Follow the idempotency principles outlined in README.md
+- Maintain POSIX sh compatibility for all scripts
+- Use `yay` for all package management (handles both official repos and AUR)
+- Ensure all changes are safe to re-run
+- Base packages go in `profiles/base/`, workstation-specific in `profiles/workstation/`
+

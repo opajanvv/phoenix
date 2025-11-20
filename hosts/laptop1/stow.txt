@@ -1,0 +1,3 @@
+# Additional dotfiles for laptop1
+# Add host-specific dotfiles here (optional)
+
