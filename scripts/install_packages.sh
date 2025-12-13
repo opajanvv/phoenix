@@ -12,8 +12,8 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 PACKAGES_FILE="$REPO_ROOT/packages.txt"
 
-# Function to read packages from a file
-read_packages() {
+# Function to read all packages from a file
+read_all_packages() {
     file="$1"
 
     while IFS= read -r line || [ -n "$line" ]; do
@@ -25,21 +25,44 @@ read_packages() {
     done < "$file"
 }
 
-# Read packages
+# Function to read packages that need installation
+read_packages_to_install() {
+    file="$1"
+
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Skip comments and empty lines
+        case "$line" in
+            \#*|"") continue ;;
+        esac
+
+        # Only include package if it's NOT already installed
+        if ! yay -Q "$line" >/dev/null 2>&1; then
+            echo "$line"
+        fi
+    done < "$file"
+}
+
+# Read all packages for post-install scripts
+all_packages=$(read_all_packages "$PACKAGES_FILE" | tr '\n' ' ')
+
+# Read packages that need installation
 log "Reading packages from $PACKAGES_FILE"
-packages=$(read_packages "$PACKAGES_FILE" | tr '\n' ' ')
+packages_to_install=$(read_packages_to_install "$PACKAGES_FILE" | tr '\n' ' ')
 
-# Install all packages
-log "Installing packages with yay: $packages"
-yay -S --needed --noconfirm $packages || die "Failed to install packages"
+# Install packages that aren't already installed
+if [ -n "$packages_to_install" ]; then
+    log "Installing packages with yay: $packages_to_install"
+    yay -S --needed --noconfirm $packages_to_install || die "Failed to install packages"
+    log "Packages installed successfully"
+else
+    log "All packages already installed"
+fi
 
-log "Packages installed successfully"
-
-# Run post-install scripts for each package
+# Run post-install scripts for ALL packages (not just newly installed)
 log "Checking for post-install scripts..."
 
 # Process each package for post-install scripts
-for package in $packages; do
+for package in $all_packages; do
     script_path="$REPO_ROOT/install/${package}.sh"
     if [ -f "$script_path" ] && [ -x "$script_path" ]; then
         log "Running post-install script: $script_path"
